@@ -22,12 +22,12 @@ app.get('/health', (req, res) => {
 const startServer = async () => {
     // Connect to MongoDB
     await connectDB();
-    
+
     // Connect to Redis
     await connectRedis();
 
     app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+        console.log(`✅ Server is running on port ${PORT}`);
     });
 };
 
