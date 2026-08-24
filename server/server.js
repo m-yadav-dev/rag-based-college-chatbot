@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const { connectRedis } = require('./config/redis');
+const documentRoutes = require('./routes/documentRoutes');
 const env_vars = require("./config/env.js")
 dotenv.config();
 
@@ -12,6 +13,9 @@ const PORT = env_vars.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// API Routes
+app.use('/api/documents', documentRoutes);
 
 // Health Check Route
 app.get('/health', (req, res) => {
