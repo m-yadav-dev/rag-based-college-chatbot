@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UploadCloud, FileText, Trash2, Loader2, ExternalLink } from 'lucide-react';
+import axios from 'axios';
 
 const DocumentManager = () => {
     const [documents, setDocuments] = useState([]);
@@ -7,6 +8,19 @@ const DocumentManager = () => {
     const [file, setFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState('');
+
+    const fetchDocuments = async () => {
+        try {
+            const { data } = await axios.get('/api/documents');
+            setDocuments(data);
+        } catch (err) {
+            console.error('Error fetching documents:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchDocuments();
+    }, []);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -34,31 +48,17 @@ const DocumentManager = () => {
         formData.append('file', file);
 
         try {
-            // Note: The actual API call is stubbed out for Day 3 scaffolding.
-            // const response = await fetch('/api/documents/upload', {
-            //     method: 'POST',
-            //     headers: { Authorization: `Bearer ${token}` }, // Browser auto-sets multipart/form-data
-            //     body: formData
-            // });
+            const { data } = await axios.post('/api/documents/upload', formData);
             
-            // Simulating API upload delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Add to UI immediately
+            setDocuments(prev => [data.document, ...prev]);
             
-            // Stubbed successful response mock
-            const newDoc = {
-                _id: Math.random().toString(36).substr(2, 9),
-                title,
-                cloudinaryUrl: '#',
-                createdAt: new Date().toISOString(),
-            };
-            
-            setDocuments(prev => [newDoc, ...prev]);
+            // Reset form
             setTitle('');
             setFile(null);
-            // Reset file input element explicitly if needed using a ref
             
         } catch (err) {
-            setError(err.message || 'Failed to upload document.');
+            setError(err.response?.data?.message || err.message || 'Failed to upload document.');
         } finally {
             setIsUploading(false);
         }
