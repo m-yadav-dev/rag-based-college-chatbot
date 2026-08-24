@@ -5,22 +5,22 @@ const redisClient = createClient({
 });
 
 redisClient.on('error', (err) => {
-    console.error('Redis Client Error', err);
+    console.error('❌ Redis Client Error', err);
 });
 
-redisClient.on('connect', () => {
-    console.log('Redis Client Connected');
+redisClient.on('connect', () => {   
+    console.log('✅ Redis Client Connected');
 });
 
 const connectRedis = async () => {
     if (!env_vars.REDIS_URL) {
-        console.warn('REDIS_URL is not set. Skipping Redis connection.');
+        console.warn('❌ REDIS_URL is not set. Skipping Redis connection.');
         return;
     }
     try {
         await redisClient.connect();
     } catch (error) {
-        console.error('Failed to connect to Redis:', error);
+        console.error('❌ Failed to connect to Redis:', error);
     }
 };
 
