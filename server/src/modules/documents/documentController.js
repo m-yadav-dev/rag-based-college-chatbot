@@ -1,5 +1,5 @@
-const Document = require('../models/Document.js');
-const cloudinary = require('../config/cloudinary.js');
+const Document = require('./Document');
+const cloudinary = require('../../../config/cloudinary');
 const mongoose = require('mongoose');
 
 // Helper to wrap cloudinary upload stream in a promise
