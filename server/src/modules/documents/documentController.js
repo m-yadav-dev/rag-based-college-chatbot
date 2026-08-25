@@ -1,6 +1,10 @@
 const Document = require('./Document');
 const cloudinary = require('../../../config/cloudinary');
 const mongoose = require('mongoose');
+const pdfParse = require('pdf-parse');
+const { splitText } = require('../../utils/textSplitter');
+const { generateEmbeddings } = require('../../services/embeddingService');
+const VectorChunk = require('../rag/VectorChunk');
 
 // Helper to wrap cloudinary upload stream in a promise
 const streamUpload = (buffer) => {
@@ -37,11 +41,30 @@ const uploadDocument = async (req, res) => {
             return res.status(400).json({ message: 'PDF file is required' });
         }
 
-        // Upload to Cloudinary using stream
+        // 1. PDF Parsing
+        console.log('Parsing PDF...');
+        const pdfData = await pdfParse(req.file.buffer);
+        const rawText = pdfData.text;
+
+        if (!rawText || rawText.trim() === '') {
+            return res.status(400).json({ message: 'Could not extract text from the provided PDF.' });
+        }
+
+        // 2. Text Splitting
+        console.log('Splitting text...');
+        const chunks = splitText(rawText);
+        console.log(`Created ${chunks.length} chunks.`);
+
+        // 3. Generate Embeddings
+        console.log('Fetching embeddings...');
+        const embeddedChunks = await generateEmbeddings(chunks);
+
+        // 4. Upload to Cloudinary using stream
+        console.log('Uploading to Cloudinary...');
         const result = await streamUpload(req.file.buffer);
 
-        // Save to MongoDB
-        // Note: Hardcoding uploadedBy for Day 3 scaffolding. Will be replaced by req.user._id in future auth phase.
+        // 5. Save Document to MongoDB
+        // Note: Hardcoding uploadedBy for scaffolding. Will be replaced by req.user._id in future auth phase.
         const newDocument = await Document.create({
             title,
             cloudinaryUrl: result.secure_url,
@@ -49,8 +72,25 @@ const uploadDocument = async (req, res) => {
             uploadedBy: new mongoose.Types.ObjectId()
         });
 
+        // 6. Save Vector Chunks to MongoDB
+        console.log('Saving vectors to MongoDB...');
+        try {
+            const vectorsToInsert = embeddedChunks.map(chunk => ({
+                documentId: newDocument._id,
+                textChunk: chunk.textChunk,
+                embedding: chunk.embedding
+            }));
+            await VectorChunk.insertMany(vectorsToInsert);
+        } catch (dbError) {
+            // Rollback Document creation if chunk insertion fails to prevent orphaned records
+            console.error('Vector insertion failed. Rolling back Document creation...', dbError);
+            await Document.findByIdAndDelete(newDocument._id);
+            // Optionally delete from cloudinary here as well using result.public_id
+            throw dbError;
+        }
+
         res.status(201).json({
-            message: 'Document uploaded successfully',
+            message: 'Document uploaded and indexed successfully',
             document: newDocument
         });
 
