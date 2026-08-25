@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const { connectRedis } = require('./config/redis');
-const documentRoutes = require('./routes/documentRoutes');
+const documentRoutes = require('./src/modules/documents/documentRoutes');
 const env_vars = require("./config/env.js")
 dotenv.config();
 

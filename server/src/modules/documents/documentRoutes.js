@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../middlewares/upload.js');
-const { uploadDocument, getDocuments } = require('../controllers/documentController.js');
+const upload = require('../../../middlewares/upload');
+const { uploadDocument, getDocuments } = require('./documentController');
 
 // Routes
 router.get('/', getDocuments);

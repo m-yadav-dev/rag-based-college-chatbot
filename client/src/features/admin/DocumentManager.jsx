@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, FileText, Trash2, Loader2, ExternalLink } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, ExternalLink } from 'lucide-react';
 import axios from 'axios';
+import Button from '../../components/common/Button';
+import TextInput from '../../components/forms/TextInput';
+import FileInput from '../../components/forms/FileInput';
 
 const DocumentManager = () => {
     const [documents, setDocuments] = useState([]);
@@ -85,46 +88,30 @@ const DocumentManager = () => {
                         </div>
                     )}
                     
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Document Title</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="e.g. Computer Science Syllabus 2026"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                            disabled={isUploading}
-                        />
-                    </div>
+                    <TextInput
+                        label="Document Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="e.g. Computer Science Syllabus 2026"
+                        disabled={isUploading}
+                    />
                     
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">PDF File</label>
-                        <input
-                            type="file"
-                            accept="application/pdf"
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer"
-                            disabled={isUploading}
-                        />
-                    </div>
+                    <FileInput
+                        label="PDF File"
+                        accept="application/pdf"
+                        onChange={handleFileChange}
+                        disabled={isUploading}
+                    />
                     
-                    <button
+                    <Button
                         type="submit"
                         disabled={isUploading || !title || !file}
-                        className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+                        isLoading={isUploading}
+                        loadingText="Uploading & Processing..."
+                        icon={UploadCloud}
                     >
-                        {isUploading ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Uploading & Processing...
-                            </>
-                        ) : (
-                            <>
-                                <UploadCloud className="w-4 h-4" />
-                                Upload Document
-                            </>
-                        )}
-                    </button>
+                        Upload Document
+                    </Button>
                 </form>
             </section>
 
