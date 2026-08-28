@@ -13,7 +13,7 @@ const ChatInput = ({ onSend, isLoading }) => {
     };
 
     return (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent pt-6 pb-6 px-4">
+        <div className="w-full bg-white p-4 border-t border-gray-200 mt-auto flex-shrink-0">
             <div className="max-w-4xl mx-auto">
                 <form 
                     onSubmit={handleSubmit}
