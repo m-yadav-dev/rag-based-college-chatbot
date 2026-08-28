@@ -21,7 +21,7 @@ const ChatView = () => {
                 return;
             }
             try {
-                const { data } = await axios.get('/api/chat/history', {
+                const { data } = await axios.get('/chat/history', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 initHistory(data);
@@ -40,7 +40,7 @@ const ChatView = () => {
         setLoading(true);
 
         try {
-            const { data } = await axios.post('/api/chat/chat', { query: query }, {
+            const { data } = await axios.post('/chat/chat', { query: query }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log("🚀 ~ ChatView ~ data:", data)

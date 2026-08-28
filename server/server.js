@@ -5,15 +5,21 @@ const connectDB = require('./config/db');
 const documentRoutes = require('./src/modules/documents/documentRoutes');
 const chatRoutes = require('./src/modules/chat/chat.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
-const env_vars = require("./config/env.js")
 dotenv.config();
 
 const app = express();
-const PORT = env_vars.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
+const allowedOrigins = [
+    'https://docututor-chat.vercel.app',
+    'http://localhost:5173'
+];
+
 app.use(cors({
-    origin: env_vars.FRONTEND_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 app.use(express.json());

@@ -14,7 +14,7 @@ const DocumentManager = () => {
 
     const fetchDocuments = async () => {
         try {
-            const { data } = await axios.get('/api/documents');
+            const { data } = await axios.get('/documents');
             setDocuments(data);
         } catch (err) {
             console.error('Error fetching documents:', err);
@@ -51,7 +51,7 @@ const DocumentManager = () => {
         formData.append('file', file);
 
         try {
-            const { data } = await axios.post('/api/documents/upload', formData);
+            const { data } = await axios.post('/documents/upload', formData);
             
             // Add to UI immediately
             setDocuments(prev => [data.document, ...prev]);

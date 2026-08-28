@@ -22,7 +22,7 @@ const Register = () => {
         setIsLoading(true);
 
         try {
-            const { data } = await axios.post('/api/auth/register', { name, email, password, role });
+            const { data } = await axios.post('/auth/register', { name, email, password, role });
             
             // Save to Zustand & localStorage
             setCredentials(data.user, data.token);
