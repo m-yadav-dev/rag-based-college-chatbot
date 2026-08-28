@@ -24,7 +24,7 @@ const generateEmbeddings = async (chunks) => {
 
     const ai = getGenAI();
     // Use the recommended model for text embeddings
-    const model = ai.getGenerativeModel({ model: 'text-embedding-004' });
+    const model = ai.getGenerativeModel({ model: 'gemini-embedding-001' });
 
     console.log(`Generating embeddings for ${chunks.length} chunks...`);
 

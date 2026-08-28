@@ -1,20 +1,34 @@
-export const createAuthSlice = (set) => ({
-    user: null,
-    token: null,
-    role: null,
-    isAuthenticated: false,
+export const createAuthSlice = (set) => {
+    // Attempt to hydrate state from localStorage on load
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    setCredentials: (user, token) => set({
-        user,
-        token,
-        role: user.role,
-        isAuthenticated: true
-    }),
+    return {
+        user: user || null,
+        token: token || null,
+        role: user?.role || null,
+        isAuthenticated: !!token,
 
-    logout: () => set({
-        user: null,
-        token: null,
-        role: null,
-        isAuthenticated: false
-    })
-});
+        setCredentials: (user, token) => {
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            set({
+                user,
+                token,
+                role: user.role,
+                isAuthenticated: true
+            });
+        },
+
+        logout: () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            set({
+                user: null,
+                token: null,
+                role: null,
+                isAuthenticated: false
+            });
+        }
+    };
+};

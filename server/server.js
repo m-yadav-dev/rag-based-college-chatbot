@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const { connectRedis } = require('./config/redis');
 const documentRoutes = require('./src/modules/documents/documentRoutes');
+const chatRoutes = require('./src/modules/chat/chat.routes');
+const authRoutes = require('./src/modules/auth/auth.routes');
 const env_vars = require("./config/env.js")
 dotenv.config();
 
@@ -11,11 +12,16 @@ const app = express();
 const PORT = env_vars.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: env_vars.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true
+}));
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health Check Route
 app.get('/health', (req, res) => {
@@ -28,7 +34,6 @@ const startServer = async () => {
     await connectDB();
 
     // Connect to Redis
-    await connectRedis();
 
     app.listen(PORT, () => {
         console.log(`✅ Server is running on port ${PORT}`);

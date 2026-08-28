@@ -1,7 +1,8 @@
 const Document = require('./Document');
 const cloudinary = require('../../../config/cloudinary');
 const mongoose = require('mongoose');
-const pdfParse = require('pdf-parse');
+// Version 2.4.5 strictly exports a named class
+const { PDFParse } = require('pdf-parse');
 const { splitText } = require('../../utils/textSplitter');
 const { generateEmbeddings } = require('../../services/embeddingService');
 const VectorChunk = require('../rag/VectorChunk');
@@ -33,7 +34,6 @@ const streamUpload = (buffer) => {
 const uploadDocument = async (req, res) => {
     try {
         const { title } = req.body;
-
         if (!title) {
             return res.status(400).json({ message: 'Title is required' });
         }
@@ -41,29 +41,41 @@ const uploadDocument = async (req, res) => {
             return res.status(400).json({ message: 'PDF file is required' });
         }
 
+        if (!req.file.buffer) {
+            console.error('❌ Fatal Error: req.file.buffer is undefined! Multer memoryStorage failed to pass the buffer.');
+            return res.status(400).json({ message: 'File buffer is missing. Upload failed.' });
+        }
+
         // 1. PDF Parsing
-        console.log('Parsing PDF...');
-        const pdfData = await pdfParse(req.file.buffer);
+        console.log('[1/6] Starting PDF parsing...');
+        const parser = new PDFParse({ data: req.file.buffer });
+        const pdfData = await parser.getText();
+        console.log("PDF Text Extracted Successfully:", pdfData.text.substring(0, 50));
         const rawText = pdfData.text;
+        console.log(`[1/6] PDF parsed successfully. Extracted ${rawText.length} characters.`);
 
         if (!rawText || rawText.trim() === '') {
+            console.warn('PDF extracted text is empty!');
             return res.status(400).json({ message: 'Could not extract text from the provided PDF.' });
         }
 
         // 2. Text Splitting
-        console.log('Splitting text...');
+        console.log('[2/6] Starting text chunking...');
         const chunks = splitText(rawText);
-        console.log(`Created ${chunks.length} chunks.`);
+        console.log(`[2/6] Text split successfully. Generated ${chunks.length} chunks.`);
 
         // 3. Generate Embeddings
-        console.log('Fetching embeddings...');
+        console.log('[3/6] Sending chunks to Google GenAI for embeddings...');
         const embeddedChunks = await generateEmbeddings(chunks);
+        console.log(`[3/6] Embeddings generated successfully for ${embeddedChunks.length} chunks.`);
 
         // 4. Upload to Cloudinary using stream
-        console.log('Uploading to Cloudinary...');
+        console.log('[4/6] Uploading original PDF to Cloudinary...');
         const result = await streamUpload(req.file.buffer);
+        console.log(`[4/6] Cloudinary upload successful. Public ID: ${result.public_id}`);
 
         // 5. Save Document to MongoDB
+        console.log('[5/6] Creating parent Document in MongoDB...');
         // Note: Hardcoding uploadedBy for scaffolding. Will be replaced by req.user._id in future auth phase.
         const newDocument = await Document.create({
             title,
@@ -71,9 +83,10 @@ const uploadDocument = async (req, res) => {
             cloudinaryId: result.public_id,
             uploadedBy: new mongoose.Types.ObjectId()
         });
+        console.log(`[5/6] Document created with ID: ${newDocument._id}`);
 
         // 6. Save Vector Chunks to MongoDB
-        console.log('Saving vectors to MongoDB...');
+        console.log('[6/6] Attempting bulk DB insert for VectorChunks...');
         try {
             const vectorsToInsert = embeddedChunks.map(chunk => ({
                 documentId: newDocument._id,
@@ -81,9 +94,11 @@ const uploadDocument = async (req, res) => {
                 embedding: chunk.embedding
             }));
             await VectorChunk.insertMany(vectorsToInsert);
+            console.log(`[6/6] SUCCESS: ${vectorsToInsert.length} VectorChunks inserted into MongoDB.`);
         } catch (dbError) {
             // Rollback Document creation if chunk insertion fails to prevent orphaned records
-            console.error('Vector insertion failed. Rolling back Document creation...', dbError);
+            console.error('❌ Vector bulk insertion failed! Rolling back Document creation...');
+            console.error(dbError.stack);
             await Document.findByIdAndDelete(newDocument._id);
             // Optionally delete from cloudinary here as well using result.public_id
             throw dbError;
@@ -95,7 +110,8 @@ const uploadDocument = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Upload Error:', error);
+        console.error('❌ Fatal Upload Controller Error:');
+        console.error(error.stack);
         res.status(500).json({ message: 'Failed to upload document', error: error.message });
     }
 };

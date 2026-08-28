@@ -61,7 +61,12 @@ const DocumentManager = () => {
             setFile(null);
             
         } catch (err) {
-            setError(err.response?.data?.message || err.message || 'Failed to upload document.');
+            const errData = err.response?.data;
+            if (errData?.errors && Array.isArray(errData.errors)) {
+                setError(errData.errors.map(e => e.message).join(', '));
+            } else {
+                setError(errData?.message || err.message || 'Failed to upload document.');
+            }
         } finally {
             setIsUploading(false);
         }

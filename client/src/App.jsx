@@ -1,24 +1,40 @@
-import { Routes, Route, Link } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import DocumentManager from './features/admin/DocumentManager';
 import Login from './features/auth/Login';
-import ChatInterface from './features/chat/ChatInterface';
+import Register from './features/auth/Register';
+import ChatView from './features/chat/ChatView';
+import Layout from './components/common/Layout';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import PublicRoute from './components/common/PublicRoute';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <nav className="bg-white shadow-sm p-4 flex gap-6 justify-center border-b border-gray-200">
-         <Link to="/" className="text-indigo-600 font-medium hover:text-indigo-800 transition">Home / Login</Link>
-         <Link to="/chat" className="text-indigo-600 font-medium hover:text-indigo-800 transition">Student Chat</Link>
-         <Link to="/admin" className="text-indigo-600 font-medium hover:text-indigo-800 transition">Admin Panel</Link>
-      </nav>
-      <main className="flex-1 overflow-auto">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/chat" element={<ChatInterface />} />
-          <Route path="/admin" element={<DocumentManager />} />
-        </Routes>
-      </main>
-    </div>
+    <Layout>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        
+        {/* Guest Only Routes */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/signup" element={<Navigate to="/register" replace />} />
+        </Route>
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['Student']} />}>
+          <Route path="/chat" element={<ChatView />} />
+        </Route>
+        
+        <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+          <Route path="/admin/documents" element={<DocumentManager />} />
+          <Route path="/admin" element={<Navigate to="/admin/documents" replace />} />
+        </Route>
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Layout>
   )
 }
 

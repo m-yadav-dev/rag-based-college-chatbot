@@ -18,5 +18,5 @@ const vectorChunkSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const VectorChunk = mongoose.model('VectorChunk', vectorChunkSchema);
+const VectorChunk = mongoose.model('VectorChunk', vectorChunkSchema, 'vectorchunks');
 module.exports = VectorChunk;
