@@ -1,10 +1,10 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 const ProtectedRoute = ({ allowedRoles }) => {
-    const isAuthenticated = useAppStore((state) => state.isAuthenticated);
-    const userRole = useAppStore((state) => state.role);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const userRole = useAuthStore((state) => state.role);
 
     if (!isAuthenticated) {
         // Not logged in, redirect to login page
@@ -25,3 +25,4 @@ const ProtectedRoute = ({ allowedRoles }) => {
 };
 
 export default ProtectedRoute;
+

@@ -8,6 +8,7 @@ import ChatView from './features/chat/ChatView';
 import Layout from './components/common/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
+import { Loader2 } from 'lucide-react';
 
 function App() {
   const rehydrate = useAuthStore((state) => state.rehydrate);
@@ -18,7 +19,9 @@ function App() {
   }, [rehydrate]);
 
   if (!isAuthChecked) {
-    return <div className="h-screen w-full flex items-center justify-center">Loading...</div>;
+    return <div className="h-screen w-full flex items-center justify-center">
+      <Loader2 className="h-8 w-8"/>
+    </div>;
   }
 
   return (
