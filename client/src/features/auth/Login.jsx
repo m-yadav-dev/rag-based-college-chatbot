@@ -1,46 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 import TextInput from '../../components/forms/TextInput';
 import Button from '../../components/common/Button';
 
 const Login = () => {
+    // Local form state only
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
     
-    const setCredentials = useAppStore((state) => state.setCredentials);
+    // Global state subscriptions
+    const login = useAuthStore((state) => state.login);
+    const isLoading = useAuthStore((state) => state.isLoading);
+    const error = useAuthStore((state) => state.error);
+    const clearError = useAuthStore((state) => state.clearError);
+    
     const navigate = useNavigate();
+
+    // Clear any lingering errors on mount
+    useEffect(() => {
+        clearError();
+    }, [clearError]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError('');
-        setIsLoading(true);
-
         try {
-            const { data } = await axios.post('/auth/login', { email, password });
-            
-            // Save to Zustand & localStorage
-            setCredentials(data.user, data.token);
-
-            // Redirect based on role
+            const data = await login({ email, password });
             if (data.user.role === 'Admin') {
                 navigate('/admin');
             } else {
                 navigate('/chat');
             }
         } catch (err) {
-            console.error('Login error', err);
-            // Check if it's a Zod validation error or a generic error
-            if (err.response?.data?.errors) {
-                setError(err.response.data.errors[0].message);
-            } else {
-                setError(err.response?.data?.message || 'Invalid email or password.');
-            }
-        } finally {
-            setIsLoading(false);
+            // Error is handled natively by the store and reflected in the UI via the 'error' state
+            console.error('Login submission failed:', err.message);
         }
     };
 
@@ -73,6 +66,7 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
                         disabled={isLoading}
+                        type="password"
                     />
                     
                     <Button 

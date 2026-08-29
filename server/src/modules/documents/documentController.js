@@ -126,7 +126,9 @@ const getDocuments = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
     uploadDocument,
-    getDocuments
+    getDocuments,
 };

@@ -1,66 +1,19 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
-import { useAppStore } from '../../store/useAppStore';
+import { useChatMessagesStore } from '../../stores/useChatMessagesStore';
 import MessageList from './components/MessageList';
 import ChatInput from './components/ChatInput';
 
 const ChatView = () => {
-    const messages = useAppStore((state) => state.messages);
-    const isLoading = useAppStore((state) => state.isLoading);
-    const addMessage = useAppStore((state) => state.addMessage);
-    const setLoading = useAppStore((state) => state.setLoading);
-    const clearChat = useAppStore((state) => state.clearChat);
-    const initHistory = useAppStore((state) => state.initHistory);
-    const token = useAppStore((state) => state.token);
-    const [isFetchingHistory, setIsFetchingHistory] = React.useState(true);
+    // Global state subscriptions
+    const messages = useChatMessagesStore((state) => state.messages);
+    const isLoading = useChatMessagesStore((state) => state.isLoading);
+    const isFetchingHistory = useChatMessagesStore((state) => state.isFetchingHistory);
+    const loadHistory = useChatMessagesStore((state) => state.loadHistory);
+    const sendMessage = useChatMessagesStore((state) => state.sendMessage);
 
     useEffect(() => {
-        const fetchHistory = async () => {
-            if (!token) {
-                setIsFetchingHistory(false);
-                return;
-            }
-            try {
-                const { data } = await axios.get('/chat/history', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                initHistory(data);
-            } catch (error) {
-                console.error('Failed to fetch chat history', error);
-            } finally {
-                setIsFetchingHistory(false);
-            }
-        };
-        fetchHistory();
-    }, [token, initHistory]);
-
-    const handleSend = async (query) => {
-        // Optimistically add the user's message
-        addMessage({ role: 'user', content: query });
-        setLoading(true);
-
-        try {
-            const { data } = await axios.post('/chat/chat', { query: query }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            console.log("🚀 ~ ChatView ~ data:", data)
-            // Append the AI's response with citations
-            addMessage({ role: 'ai', content: data.answer, sources: data.sources });
-        } catch (error) {
-            console.error('Chat error:', error);
-            const errData = error.response?.data;
-            let errorMessage = errData?.message || 'Sorry, I encountered an error. Please try again.';
-            
-            // Handle Zod array errors
-            if (errData?.errors && Array.isArray(errData.errors)) {
-                errorMessage = errData.errors.map(e => e.message).join(', ');
-            }
-            
-            addMessage({ role: 'ai', content: errorMessage });
-        } finally {
-            setLoading(false);
-        }
-    };
+        loadHistory();
+    }, [loadHistory]);
 
     return (
         <div className="relative h-[calc(100vh-65px)] bg-gray-50 flex flex-col items-center overflow-hidden w-full">
@@ -84,12 +37,12 @@ const ChatView = () => {
                     <>
                         <MessageList messages={messages} isLoading={isLoading} />
                         {isLoading && (
-                            <div className="px-6 py-2 text-sm text-indigo-500 italic animate-pulse flex items-center gap-2 bg-white/50 backdrop-blur-sm border-t border-gray-100">
+                            <div className="px-6 py-2 text-sm text-indigo-500 italic animate-pulse flex items-center gap-2 bg-white/50 backdrop-blur-sm border-t border-gray-100 flex-shrink-0 z-10">
                                 <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></span>
                                 ✨ Generating answer...
                             </div>
                         )}
-                        <ChatInput onSend={handleSend} isLoading={isLoading} />
+                        <ChatInput onSend={sendMessage} isLoading={isLoading} />
                     </>
                 )}
             </div>
