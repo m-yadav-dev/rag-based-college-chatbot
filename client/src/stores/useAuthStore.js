@@ -1,37 +1,50 @@
 import { create } from 'zustand';
 import { loginService, registerService, guestLoginRequest } from '../api/auth.service';
 
+const safeParse = (key) => {
+    try {
+        const val = localStorage.getItem(key);
+        if (val && val !== 'undefined') return JSON.parse(val);
+    } catch (e) {
+        console.error(`Failed to parse ${key} from localStorage:`, e);
+    }
+    return null;
+};
+
+const initialUser = safeParse('user');
+const initialToken = localStorage.getItem('token') || null;
+
 export const useAuthStore = create((set) => ({
-    user: JSON.parse(localStorage.getItem('user')) || null,
-    token: localStorage.getItem('token') || null,
+    user: initialUser,
+    token: initialToken,
+    // Derived state consumed by ProtectedRoute, PublicRoute, Layout
+    isAuthenticated: !!initialToken && !!initialUser,
+    role: initialUser?.role || null,
     isAuthChecked: false,
     isLoading: false,
     error: null,
 
     rehydrate: () => {
         const token = localStorage.getItem('token');
-        let user = null;
-        
-        try {
-            const userStr = localStorage.getItem('user');
-            if (userStr && userStr !== 'undefined') {
-                user = JSON.parse(userStr);
-            }
-        } catch (e) {
-            console.error('Failed to parse user on rehydrate:', e);
-        }
+        const user = safeParse('user');
 
-        // If we have a token but user parsing failed, clear the broken state
-        if (token && !user) {
+        if (token && user) {
+            set({ token, user, isAuthenticated: true, role: user.role, isAuthChecked: true });
+        } else {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            set({ token: null, user: null, isAuthChecked: true });
-        } else {
-            set({ token, user, isAuthChecked: true });
+            set({ token: null, user: null, isAuthenticated: false, role: null, isAuthChecked: true });
         }
     },
 
     clearError: () => set({ error: null }),
+
+    // Used by Register.jsx (mirrors the old useAppStore.setCredentials)
+    setCredentials: (user, token) => {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        set({ user, token, isAuthenticated: true, role: user.role, isLoading: false, isAuthChecked: true });
+    },
 
     login: async (credentials) => {
         set({ isLoading: true, error: null });
@@ -40,7 +53,11 @@ export const useAuthStore = create((set) => ({
             if (data && data.user && data.token) {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);
-                set({ user: data.user, token: data.token, isLoading: false, isAuthChecked: true });
+                set({
+                    user: data.user, token: data.token,
+                    isAuthenticated: true, role: data.user.role,
+                    isLoading: false, isAuthChecked: true
+                });
             }
             return true;
         } catch (err) {
@@ -62,7 +79,11 @@ export const useAuthStore = create((set) => ({
             if (data && data.user && data.token) {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);
-                set({ user: data.user, token: data.token, isLoading: false, isAuthChecked: true });
+                set({
+                    user: data.user, token: data.token,
+                    isAuthenticated: true, role: data.user.role,
+                    isLoading: false, isAuthChecked: true
+                });
             }
             return true;
         } catch (err) {
@@ -78,6 +99,7 @@ export const useAuthStore = create((set) => ({
     logout: () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-        set({ user: null, token: null, error: null });
+        set({ user: null, token: null, isAuthenticated: false, role: null, error: null, isAuthChecked: true });
     }
 }));
+

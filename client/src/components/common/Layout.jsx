@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 import { LogOut } from 'lucide-react';
 
 const Layout = ({ children }) => {
-    const isAuthenticated = useAppStore((state) => state.isAuthenticated);
-    const role = useAppStore((state) => state.role);
-    const logout = useAppStore((state) => state.logout);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const role = useAuthStore((state) => state.role);
+    const logout = useAuthStore((state) => state.logout);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -36,8 +36,10 @@ const Layout = ({ children }) => {
                             {role === 'Admin' && (
                                 <Link to="/admin" className="text-gray-600 hover:text-indigo-600 font-medium transition">Admin Panel</Link>
                             )}
-                            {role === 'Student' && (
-                                <Link to="/chat" className="text-gray-600 hover:text-indigo-600 font-medium transition">Student Chat</Link>
+                            {(role === 'Student' || role === 'Guest') && (
+                                <Link to="/chat" className="text-gray-600 hover:text-indigo-600 font-medium transition">
+                                    {role === 'Guest' ? 'Guest Chat' : 'Student Chat'}
+                                </Link>
                             )}
                             
                             <div className="h-6 w-px bg-gray-300 mx-2"></div>
@@ -61,3 +63,4 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
+

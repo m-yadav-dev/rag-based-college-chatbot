@@ -28,12 +28,8 @@ const Login = () => {
         try {
             const success = await login({ email, password });
             if (success) {
-                const user = useAuthStore.getState().user;
-                if (user?.role === 'Admin') {
-                    navigate('/admin');
-                } else {
-                    navigate('/chat');
-                }
+                const { role } = useAuthStore.getState();
+                navigate(role === 'Admin' ? '/admin' : '/chat');
             }
         } catch (err) {
             console.error('Login submission failed:', err.message);
@@ -106,7 +102,7 @@ const Login = () => {
                     type="button"
                     onClick={handleGuestLogin}
                     disabled={isLoading}
-                    className="w-full mt-6 flex justify-center py-2.5 px-4 border-2 border-indigo-600 rounded-xl shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full mt-6 cursor-pointer flex justify-center py-2.5 px-4 border-2 border-indigo-600 rounded-xl shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     {isLoading ? 'Setting up Guest...' : 'Continue as Guest (24h Access)'}
                 </button>

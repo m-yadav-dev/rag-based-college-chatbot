@@ -1,10 +1,10 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 const PublicRoute = () => {
-    const isAuthenticated = useAppStore((state) => state.isAuthenticated);
-    const userRole = useAppStore((state) => state.role);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const userRole = useAuthStore((state) => state.role);
 
     if (isAuthenticated) {
         // Logged in, redirect away from public routes (like login/register)
@@ -19,3 +19,4 @@ const PublicRoute = () => {
 };
 
 export default PublicRoute;
+

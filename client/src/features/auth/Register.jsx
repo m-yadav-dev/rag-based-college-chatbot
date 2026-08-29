@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '../../stores/useAuthStore';
+import { registerService } from '../../api/auth.service';
 import TextInput from '../../components/forms/TextInput';
 import Button from '../../components/common/Button';
 
@@ -13,7 +13,7 @@ const Register = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     
-    const setCredentials = useAppStore((state) => state.setCredentials);
+    const setCredentials = useAuthStore((state) => state.setCredentials);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -22,7 +22,7 @@ const Register = () => {
         setIsLoading(true);
 
         try {
-            const { data } = await axios.post('/auth/register', { name, email, password, role });
+            const data = await registerService({ name, email, password, role });
             
             // Save to Zustand & localStorage
             setCredentials(data.user, data.token);
@@ -77,8 +77,6 @@ const Register = () => {
                         disabled={isLoading}
                     />
                     
-                    {/* Wait, TextInput uses type="text", but password should use type="password". 
-                        We will adapt TextInput or just use native input here for password security. */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                         <input
@@ -126,3 +124,4 @@ const Register = () => {
 };
 
 export default Register;
+
