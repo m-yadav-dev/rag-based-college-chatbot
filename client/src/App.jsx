@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from "react-router-dom"
+import { useAuthStore } from './stores/useAuthStore';
 import DocumentManager from './features/admin/DocumentManager';
 import Login from './features/auth/Login';
 import Register from './features/auth/Register';
@@ -8,6 +10,17 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 
 function App() {
+  const rehydrate = useAuthStore((state) => state.rehydrate);
+  const isAuthChecked = useAuthStore((state) => state.isAuthChecked);
+
+  useEffect(() => {
+    rehydrate();
+  }, [rehydrate]);
+
+  if (!isAuthChecked) {
+    return <div className="h-screen w-full flex items-center justify-center">Loading...</div>;
+  }
+
   return (
     <Layout>
       <Routes>

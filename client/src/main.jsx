@@ -5,7 +5,7 @@ import axios from 'axios';
 import './index.css'
 
 // Global Axios Configuration for Production & Local Development
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
