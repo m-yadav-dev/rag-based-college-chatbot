@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const errorHandler = require('./middlewares/errorHandler');
 const documentRoutes = require('./src/modules/documents/documentRoutes');
 const chatRoutes = require('./src/modules/chat/chat.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
@@ -34,6 +35,9 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'Server is running normally.' });
 });
 
+// Centralized Error Handler — MUST be the LAST middleware registered
+app.use(errorHandler);
+
 // Initialize Connections and Start Server
 const startServer = async () => {
     // Connect to MongoDB
@@ -47,3 +51,4 @@ const startServer = async () => {
 };
 
 startServer();
+

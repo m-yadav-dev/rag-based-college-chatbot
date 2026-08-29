@@ -32,7 +32,7 @@ const streamUpload = (buffer) => {
     });
 };
 
-const uploadDocument = async (req, res) => {
+const uploadDocument = async (req, res, next) => {
     try {
         const { title } = req.body;
         if (!title) {
@@ -111,34 +111,30 @@ const uploadDocument = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Fatal Upload Controller Error:');
-        console.error(error.stack);
-        res.status(500).json({ message: 'Failed to upload document', error: error.message });
+        next(error);
     }
 };
 
-const getDocuments = async (req, res) => {
+const getDocuments = async (req, res, next) => {
     try {
         const documents = await Document.find().sort({ createdAt: -1 });
         res.status(200).json(documents);
     } catch (error) {
-        console.error('Fetch Error:', error);
-        res.status(500).json({ message: 'Failed to fetch documents', error: error.message });
+        next(error);
     }
 };
 
-const deleteDocument = async (req, res) => {
+const deleteDocument = async (req, res, next) => {
     try {
         await deleteDocumentService(req.params.id);
         res.status(200).json({ message: 'Document and vectors deleted successfully' });
     } catch (error) {
-        console.error('Delete Document Controller Error:', error);
-        const statusCode = error.message === 'Document not found' ? 404 : 500;
-        res.status(statusCode).json({ message: 'Failed to delete document', error: error.message });
+        if (error.message === 'Document not found') error.statusCode = 404;
+        next(error);
     }
 };
 
-const renameDocument = async (req, res) => {
+const renameDocument = async (req, res, next) => {
     try {
         const { title: newTitle } = req.body;
         if (!newTitle || newTitle.trim() === '') {
@@ -148,9 +144,8 @@ const renameDocument = async (req, res) => {
         // Return exactly the updated document for the store sync
         res.status(200).json(updatedDoc);
     } catch (error) {
-        console.error('Rename Document Controller Error:', error);
-        const statusCode = error.message === 'Document not found' ? 404 : 500;
-        res.status(statusCode).json({ message: 'Failed to rename document', error: error.message });
+        if (error.message === 'Document not found') error.statusCode = 404;
+        next(error);
     }
 };
 
