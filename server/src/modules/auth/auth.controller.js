@@ -81,4 +81,26 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { register, login };
+const { guestLoginService } = require('./auth.service');
+
+const guestLogin = async (req, res) => {
+    try {
+        const { token, user } = await guestLoginService();
+        res.status(200).json({
+            message: 'Guest login successful',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                expiresAt: user.expiresAt
+            }
+        });
+    } catch (error) {
+        console.error('Guest login error:', error);
+        res.status(500).json({ message: 'Server error during guest login' });
+    }
+};
+
+module.exports = { register, login, guestLogin };

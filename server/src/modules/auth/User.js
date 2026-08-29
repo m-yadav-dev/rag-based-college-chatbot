@@ -19,8 +19,11 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['Admin', 'Student'],
+        enum: ['Admin', 'Student', 'Guest'],
         default: 'Student'
+    },
+    expiresAt: {
+        type: Date
     }
 }, {
     timestamps: true

@@ -11,6 +11,7 @@ const Login = () => {
     
     // Global state subscriptions
     const login = useAuthStore((state) => state.login);
+    const guestLogin = useAuthStore((state) => state.guestLogin);
     const isLoading = useAuthStore((state) => state.isLoading);
     const error = useAuthStore((state) => state.error);
     const clearError = useAuthStore((state) => state.clearError);
@@ -25,15 +26,28 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const data = await login({ email, password });
-            if (data.user.role === 'Admin') {
-                navigate('/admin');
-            } else {
+            const success = await login({ email, password });
+            if (success) {
+                const user = useAuthStore.getState().user;
+                if (user?.role === 'Admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/chat');
+                }
+            }
+        } catch (err) {
+            console.error('Login submission failed:', err.message);
+        }
+    };
+
+    const handleGuestLogin = async () => {
+        try {
+            const success = await guestLogin();
+            if (success) {
                 navigate('/chat');
             }
         } catch (err) {
-            // Error is handled natively by the store and reflected in the UI via the 'error' state
-            console.error('Login submission failed:', err.message);
+            console.error('Guest login submission failed:', err.message);
         }
     };
 
@@ -78,6 +92,24 @@ const Login = () => {
                         Sign In
                     </Button>
                 </form>
+
+                <div className="relative mt-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-gray-500">Or</span>
+                    </div>
+                </div>
+                
+                <button
+                    type="button"
+                    onClick={handleGuestLogin}
+                    disabled={isLoading}
+                    className="w-full mt-6 flex justify-center py-2.5 px-4 border-2 border-indigo-600 rounded-xl shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    {isLoading ? 'Setting up Guest...' : 'Continue as Guest (24h Access)'}
+                </button>
 
                 <div className="mt-6 text-center text-sm text-gray-600">
                     Don't have an account?{' '}

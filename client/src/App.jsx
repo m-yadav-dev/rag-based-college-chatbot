@@ -35,7 +35,7 @@ function App() {
         </Route>
 
         {/* Protected Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['Student']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['Student', 'Guest']} />}>
           <Route path="/chat" element={<ChatView />} />
         </Route>
         

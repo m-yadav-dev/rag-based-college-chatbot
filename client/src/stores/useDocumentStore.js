@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { getDocumentsService, uploadDocumentService, deleteDocumentService } from '../api/document.service';
+import { getDocumentsService, uploadDocumentService, deleteDocumentService, renameDocumentService } from '../api/document.service';
 import { useAuthStore } from './useAuthStore';
 
-export const useDocumentStore = create((set) => ({
+export const useDocumentStore = create((set, get) => ({
     documents: [],
     isLoading: false,
     isUploading: false,
@@ -60,6 +60,34 @@ export const useDocumentStore = create((set) => ({
             }));
         } catch (error) {
             console.error('Failed to delete document', error);
+        }
+    },
+
+    renameDocument: async (id, newTitle) => {
+        const token = useAuthStore.getState().token;
+        if (!token) return;
+
+        // Optimistic UI Update
+        const previousDocuments = get().documents;
+        set((state) => ({
+            documents: state.documents.map(doc => 
+                doc._id === id ? { ...doc, title: newTitle } : doc
+            )
+        }));
+
+        try {
+            const updatedDoc = await renameDocumentService(id, newTitle, token);
+            // Replace the optimistic doc with the exact truth from backend
+            set((state) => ({
+                documents: state.documents.map(doc => 
+                    doc._id === id ? updatedDoc : doc
+                )
+            }));
+        } catch (error) {
+            console.error('Rename failed in store:', error.response?.data || error.message);
+            // Revert UI on failure
+            set({ documents: previousDocuments });
+            throw error;
         }
     }
 }));

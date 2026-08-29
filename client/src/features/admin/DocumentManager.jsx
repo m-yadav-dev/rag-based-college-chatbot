@@ -4,7 +4,7 @@ import { useDocumentStore } from '../../stores/useDocumentStore';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/forms/TextInput';
 import FileInput from '../../components/forms/FileInput';
-import DocumentManagerListItems from './DocumentManagerListItems';
+import DocumentItem from '../../components/documents/DocumentItem';
 
 const DocumentManager = () => {
     // Local form state
@@ -18,7 +18,6 @@ const DocumentManager = () => {
     const storeError = useDocumentStore((state) => state.error);
     const loadDocuments = useDocumentStore((state) => state.loadDocuments);
     const addDocument = useDocumentStore((state) => state.addDocument);
-    const removeDocument = useDocumentStore((state) => state.removeDocument);
 
     useEffect(() => {
         loadDocuments();
@@ -126,9 +125,7 @@ const DocumentManager = () => {
                                 </tr>
                             ) : (
                                 documents.map((doc) => (
-                                    <tr key={doc._id} className="hover:bg-gray-50/50 transition-colors">
-                                        <DocumentManagerListItems doc={doc} deleteDocument={removeDocument} />
-                                    </tr>
+                                    <DocumentItem key={doc._id} doc={doc} />
                                 ))
                             )}
                         </tbody>

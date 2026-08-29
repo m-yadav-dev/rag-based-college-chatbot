@@ -6,6 +6,7 @@ const { PDFParse } = require('pdf-parse');
 const { splitText } = require('../../utils/textSplitter');
 const { generateEmbeddings } = require('../../services/embeddingService');
 const VectorChunk = require('../rag/VectorChunk');
+const { deleteDocumentService, renameDocumentService } = require('./document.service');
 
 // Helper to wrap cloudinary upload stream in a promise
 const streamUpload = (buffer) => {
@@ -126,9 +127,37 @@ const getDocuments = async (req, res) => {
     }
 };
 
+const deleteDocument = async (req, res) => {
+    try {
+        await deleteDocumentService(req.params.id);
+        res.status(200).json({ message: 'Document and vectors deleted successfully' });
+    } catch (error) {
+        console.error('Delete Document Controller Error:', error);
+        const statusCode = error.message === 'Document not found' ? 404 : 500;
+        res.status(statusCode).json({ message: 'Failed to delete document', error: error.message });
+    }
+};
+
+const renameDocument = async (req, res) => {
+    try {
+        const { title: newTitle } = req.body;
+        if (!newTitle || newTitle.trim() === '') {
+            return res.status(400).json({ message: 'New title is required' });
+        }
+        const updatedDoc = await renameDocumentService(req.params.id, newTitle.trim());
+        // Return exactly the updated document for the store sync
+        res.status(200).json(updatedDoc);
+    } catch (error) {
+        console.error('Rename Document Controller Error:', error);
+        const statusCode = error.message === 'Document not found' ? 404 : 500;
+        res.status(statusCode).json({ message: 'Failed to rename document', error: error.message });
+    }
+};
 
 
 module.exports = {
     uploadDocument,
     getDocuments,
+    deleteDocument,
+    renameDocument
 };
