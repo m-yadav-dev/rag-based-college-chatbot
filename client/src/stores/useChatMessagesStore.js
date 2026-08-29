@@ -49,15 +49,20 @@ export const useChatMessagesStore = create((set, get) => ({
             }));
         } catch (error) {
             console.error('Chat error:', error);
+            const status = error.response?.status;
             const errData = error.response?.data;
-            let errorMessage = errData?.message || 'Sorry, I encountered an error. Please try again.';
-            
-            if (errData?.errors && Array.isArray(errData.errors)) {
+            let errorMessage;
+
+            if (status === 429) {
+                errorMessage = '⏳ You\'re sending messages too quickly. Please wait a minute before trying again.';
+            } else if (errData?.errors && Array.isArray(errData.errors)) {
                 errorMessage = errData.errors.map(e => e.message).join(', ');
+            } else {
+                errorMessage = errData?.message || 'Sorry, I encountered an error. Please try again.';
             }
             
             set((state) => ({
-                messages: [...state.messages, { role: 'ai', content: errorMessage }],
+                messages: [...state.messages, { role: 'ai', content: errorMessage, isError: true }],
                 isLoading: false,
                 error: errorMessage
             }));

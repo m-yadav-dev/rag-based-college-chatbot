@@ -5,7 +5,7 @@ const env_vars = require("../../../config/env.js");
 
 const JWT_SECRET = env_vars.JWT_SECRET || process.env.JWT_SECRET || 'fallback_secret_key_for_dev';
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     try {
         const { name, email, password, role } = req.body;
         
@@ -40,12 +40,11 @@ const register = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Register error:', error);
-        res.status(500).json({ message: 'Server error during registration' });
+        next(error);
     }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         
@@ -76,14 +75,13 @@ const login = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error during login' });
+        next(error);
     }
 };
 
 const { guestLoginService } = require('./auth.service');
 
-const guestLogin = async (req, res) => {
+const guestLogin = async (req, res, next) => {
     try {
         const { token, user } = await guestLoginService();
         res.status(200).json({
@@ -98,8 +96,7 @@ const guestLogin = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Guest login error:', error);
-        res.status(500).json({ message: 'Server error during guest login' });
+        next(error);
     }
 };
 

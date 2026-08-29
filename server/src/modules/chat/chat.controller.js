@@ -12,7 +12,7 @@ const getGenAI = () => {
     return genAI;
 };
 
-const handleChatQuery = async (req, res) => {
+const handleChatQuery = async (req, res, next) => {
     try {
         const { query } = req.body;
 
@@ -135,18 +135,16 @@ ${contextBlocks}`;
         res.status(200).json(payload);
 
     } catch (error) {
-        console.error('❌ Chat API Error:', error);
-        res.status(500).json({ message: 'Failed to process chat query', error: error.message });
+        next(error);
     }
 };
 
-const getChatHistory = async (req, res) => {
+const getChatHistory = async (req, res, next) => {
     try {
         const history = await ChatMessage.find({ userId: req.user._id }).sort({ createdAt: 1 });
         res.status(200).json(history);
     } catch (error) {
-        console.error('Fetch History Error:', error);
-        res.status(500).json({ message: 'Failed to fetch chat history', error: error.message });
+        next(error);
     }
 };
 
