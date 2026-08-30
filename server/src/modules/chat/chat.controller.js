@@ -32,7 +32,6 @@ const handleChatQuery = async (req, res, next) => {
         }
 
         // 2. Retrieval: Embed the user's query
-        console.log('Embedding student query...');
         // generateEmbeddings expects an array and returns an array of {textChunk, embedding}
         const embeddedResult = await generateEmbeddings([normalizedQuery]);
         if (!embeddedResult || embeddedResult.length === 0) {
@@ -42,7 +41,6 @@ const handleChatQuery = async (req, res, next) => {
 
         let searchResults;
         try {
-            console.log('Running MongoDB $vectorSearch...');
             const pipeline = [
                 {
                     $vectorSearch: {
@@ -90,7 +88,6 @@ const handleChatQuery = async (req, res, next) => {
 
         let answer;
         try {
-            console.log('Generating response with Gemini 2.5 Flash...');
             const ai = getGenAI();
             const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
             
