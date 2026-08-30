@@ -19,7 +19,7 @@ const ChatView = () => {
     }, [loadHistory]);
 
     return (
-        <div className="flex-1 bg-gray-50 flex flex-col items-center overflow-hidden w-full">
+        <div className="flex-1 bg-slate-50/80 flex flex-col items-center overflow-hidden w-full">
             <div className="w-full md:w-3/4 lg:max-w-4xl mx-auto flex flex-col flex-1 overflow-hidden min-h-0 relative">
                 {isFetchingHistory ? (
                     <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto">
@@ -39,16 +39,9 @@ const ChatView = () => {
                 ) : (
                     <>
                         <MessageList messages={messages} isLoading={isLoading} />
-                        
-                        {isLoading && (
-                            <div className="px-4 sm:px-6 py-2 text-xs sm:text-sm text-indigo-500 italic animate-pulse flex items-center gap-2 bg-white/50 backdrop-blur-sm border-t border-gray-100 flex-shrink-0 z-10">
-                                <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></span>
-                                ✨ Generating answer...
-                            </div>
-                        )}
 
                         {error && (
-                            <div className="mx-4 sm:mx-6 my-2 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg flex items-start sm:items-center justify-between text-sm shadow-sm flex-shrink-0 z-10 animate-in fade-in slide-in-from-bottom-2">
+                            <div className="mx-4 sm:mx-6 my-2 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg flex items-start sm:items-center justify-between text-sm shadow-sm flex-shrink-0 z-10">
                                 <div className="flex items-center gap-2">
                                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                                     <span>{error}</span>
@@ -71,4 +64,3 @@ const ChatView = () => {
 };
 
 export default ChatView;
-
