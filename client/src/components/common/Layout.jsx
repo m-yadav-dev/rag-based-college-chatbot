@@ -19,15 +19,23 @@ const Layout = ({ children }) => {
 
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+    
+
     // Shared nav link content (reused by desktop and mobile menus)
-    const NavLinks = ({ className = '' }) => (
-        <div className={className}>
-            {!isAuthenticated ? (
-                <>
-                    <Link to="/login" onClick={closeMobileMenu} className="text-gray-600 hover:text-indigo-600 font-medium transition">Login</Link>
-                    <Link to="/register" onClick={closeMobileMenu} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 font-medium transition text-center">Sign Up</Link>
-                </>
-            ) : (
+    const NavLinks = ({ className = '' }) => {
+        const isLogin = location.pathname === '/login';
+        const isRegister = location.pathname === '/register';
+        const activeClass = "px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 font-medium transition text-center";
+        const inactiveClass = "px-4 py-2 text-gray-600 hover:text-indigo-600 font-medium transition text-center";
+
+        return (
+            <div className={className}>
+                {!isAuthenticated ? (
+                    <>
+                        <Link to="/login" onClick={closeMobileMenu} className={isLogin ? activeClass : inactiveClass}>Login</Link>
+                        <Link to="/register" onClick={closeMobileMenu} className={isRegister ? activeClass : inactiveClass}>Sign Up</Link>
+                    </>
+                ) : (
                 <>
                     {role === 'Admin' && (
                         <Link to="/admin" onClick={closeMobileMenu} className="text-gray-600 hover:text-indigo-600 font-medium transition">Admin Panel</Link>
@@ -49,6 +57,7 @@ const Layout = ({ children }) => {
             )}
         </div>
     );
+};
 
     return (
         <div className="h-dvh bg-gray-50 flex flex-col">
