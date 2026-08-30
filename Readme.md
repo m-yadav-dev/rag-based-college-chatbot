@@ -31,7 +31,9 @@ A resilient, synchronised approach to vector knowledge management.
 Enterprise-grade reliability out of the box.
 - **Mechanism:** Centralized error handling combined with strict API rate limiting prevents abuse and ensures high availability, even during peak campus usage times (e.g., enrollment periods).
 
-![GIF: Rate Limiting in Action](placeholder_rate_limiting.gif)
+<h1>🚦 Request Quota Enforcement</h1>
+<img width="1000" height="600" alt="Rate limiter" src="https://github.com/user-attachments/assets/5668338c-a096-4aff-a8e8-8bc09acd34cd" />
+
 
 ## 🏗️ High-Level Architecture
 
