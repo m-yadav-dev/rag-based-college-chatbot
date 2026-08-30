@@ -25,6 +25,7 @@ Frictionless onboarding with ephemeral guest sessions.
 A resilient, synchronised approach to vector knowledge management.
 - **Mechanism:** Uploaded documents are simultaneously stored in Cloudinary, while their vectorised representations are cached in Upstash Redis and indexed in MongoDB. Deletions trigger a synchronised wipe across all three services to prevent orphan data and vector drift.
 
+<h1>⚙️ Admin Dashboard: Centralized Knowledge Management</h1>
 <img width="1000" height="600" alt="Admin Dashboard Centralized Knowledge Management" src="https://github.com/user-attachments/assets/b9f96454-a73c-49a6-852b-48d1a76ee73b" />
 
 ### 🛡️ Robust API Rate Limiting & Error Handling
