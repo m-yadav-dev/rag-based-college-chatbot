@@ -2,14 +2,17 @@ import React, { useEffect } from 'react';
 import { useChatMessagesStore } from '../../stores/useChatMessagesStore';
 import MessageList from './components/MessageList';
 import ChatInput from './components/ChatInput';
+import { AlertCircle, X } from 'lucide-react';
 
 const ChatView = () => {
     // Global state subscriptions
     const messages = useChatMessagesStore((state) => state.messages);
     const isLoading = useChatMessagesStore((state) => state.isLoading);
     const isFetchingHistory = useChatMessagesStore((state) => state.isFetchingHistory);
+    const error = useChatMessagesStore((state) => state.error);
     const loadHistory = useChatMessagesStore((state) => state.loadHistory);
     const sendMessage = useChatMessagesStore((state) => state.sendMessage);
+    const clearError = useChatMessagesStore((state) => state.clearError);
 
     useEffect(() => {
         loadHistory();
@@ -36,12 +39,29 @@ const ChatView = () => {
                 ) : (
                     <>
                         <MessageList messages={messages} isLoading={isLoading} />
+                        
                         {isLoading && (
                             <div className="px-4 sm:px-6 py-2 text-xs sm:text-sm text-indigo-500 italic animate-pulse flex items-center gap-2 bg-white/50 backdrop-blur-sm border-t border-gray-100 flex-shrink-0 z-10">
                                 <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></span>
                                 ✨ Generating answer...
                             </div>
                         )}
+
+                        {error && (
+                            <div className="mx-4 sm:mx-6 my-2 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg flex items-start sm:items-center justify-between text-sm shadow-sm flex-shrink-0 z-10 animate-in fade-in slide-in-from-bottom-2">
+                                <div className="flex items-center gap-2">
+                                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                    <span>{error}</span>
+                                </div>
+                                <button 
+                                    onClick={clearError}
+                                    className="p-1 hover:bg-red-100 rounded-md transition-colors ml-4 flex-shrink-0 cursor-pointer"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
+
                         <ChatInput onSend={sendMessage} isLoading={isLoading} />
                     </>
                 )}

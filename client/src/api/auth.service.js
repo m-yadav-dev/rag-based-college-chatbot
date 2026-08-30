@@ -1,9 +1,4 @@
-import axios from 'axios';
-
-// Instantiating a local instance binds the environment variable immediately
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
-});
+import api from './axios';
 
 export const loginService = async (credentials) => {
     const response = await api.post('/auth/login', credentials);

@@ -4,6 +4,8 @@ const VectorChunk = require('../rag/VectorChunk');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const env_vars = require('../../../config/env'); // using user's env setup
 const ChatMessage = require('./ChatMessage');
+const { buildRAGPrompt } = require('../../utils/promptBuilder');
+
 let genAI = null;
 const getGenAI = () => {
     if (!genAI) {
@@ -38,69 +40,71 @@ const handleChatQuery = async (req, res, next) => {
         }
         const queryVector = embeddedResult[0].embedding;
 
-        // 3. MongoDB $vectorSearch Pipeline
-        console.log('Running MongoDB $vectorSearch...');
-        const pipeline = [
-            {
-                $vectorSearch: {
-                    index: 'vector_index',
-                    path: 'embedding',
-                    queryVector: queryVector,
-                    numCandidates: 30, // Usually 10-20x the limit
-                    limit: 3 // Fetch top 3 most relevant chunks
+        let searchResults;
+        try {
+            console.log('Running MongoDB $vectorSearch...');
+            const pipeline = [
+                {
+                    $vectorSearch: {
+                        index: 'vector_index',
+                        path: 'embedding',
+                        queryVector: queryVector,
+                        numCandidates: 30, // Usually 10-20x the limit
+                        limit: 3 // Fetch top 3 most relevant chunks
+                    }
+                },
+                {
+                    // Join with the Document collection to get metadata (Cloudinary URL, Title)
+                    $lookup: {
+                        from: 'documents', // MongoDB creates collections pluralized lowercase
+                        localField: 'documentId',
+                        foreignField: '_id',
+                        as: 'document'
+                    }
+                },
+                {
+                    $unwind: '$document'
+                },
+                {
+                    // Format the output
+                    $project: {
+                        _id: 0,
+                        textChunk: 1,
+                        title: '$document.title',
+                        cloudinaryUrl: '$document.cloudinaryUrl',
+                        score: { $meta: 'vectorSearchScore' }
+                    }
                 }
-            },
-            {
-                // Join with the Document collection to get metadata (Cloudinary URL, Title)
-                $lookup: {
-                    from: 'documents', // MongoDB creates collections pluralized lowercase
-                    localField: 'documentId',
-                    foreignField: '_id',
-                    as: 'document'
-                }
-            },
-            {
-                $unwind: '$document'
-            },
-            {
-                // Format the output
-                $project: {
-                    _id: 0,
-                    textChunk: 1,
-                    title: '$document.title',
-                    cloudinaryUrl: '$document.cloudinaryUrl',
-                    score: { $meta: 'vectorSearchScore' }
-                }
-            }
-        ];
+            ];
 
-        const searchResults = await VectorChunk.aggregate(pipeline);
+            searchResults = await VectorChunk.aggregate(pipeline);
+        } catch (ragErr) {
+            console.error('Vector Search Error:', ragErr);
+            const err = new Error('RAG_ACCESS_FAILED');
+            err.code = 'RAG_ACCESS_FAILED';
+            throw err;
+        }
 
         // 4. LLM Generation Step
-        const contextBlocks = searchResults.map(r => `Document: ${r.title}\nContent: ${r.textChunk}`).join('\n\n');
-        
-        // Strict system prompt forcing it to rely ONLY on context
-        const systemPrompt = `You are a helpful college assistant. 
-        Answer the user's question using ONLY the information in the provided context. 
-        You are allowed to perform basic calculations (like converting semesters to years) 
-        if the data is present in the context. If the provided context does not contain 
-        enough information to logically deduce the answer, strictly reply exactly with: 
-        'Information not found in college documents.' Do not bring in outside knowledge.
+        const finalPrompt = buildRAGPrompt(query, searchResults);
 
-CONTEXT:
-${contextBlocks}`;
-
-        console.log('Generating response with Gemini 2.5 Flash...');
-        const ai = getGenAI();
-        const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
-        
-        const result = await model.generateContent({
-            contents: [
-                { role: 'user', parts: [{ text: systemPrompt + '\n\nSTUDENT QUESTION:\n' + query }] }
-            ]
-        });
-        
-        const answer = result.response.text();
+        let answer;
+        try {
+            console.log('Generating response with Gemini 2.5 Flash...');
+            const ai = getGenAI();
+            const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
+            
+            const result = await model.generateContent({
+                contents: [
+                    { role: 'user', parts: [{ text: finalPrompt }] }
+                ]
+            });
+            
+            answer = result.response.text();
+        } catch (llmErr) {
+            console.error('Gemini API Error:', llmErr);
+            throw llmErr;
+        }
         
         // 5. Response & Caching Step
         // Deduplicate source citations based on Cloudinary URL

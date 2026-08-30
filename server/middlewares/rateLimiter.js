@@ -10,8 +10,11 @@ const chatRateLimiter = rateLimit({
     max: 10,             // 10 requests per windowMs per IP
     standardHeaders: true,  // Return rate limit info in `RateLimit-*` headers
     legacyHeaders: false,   // Disable `X-RateLimit-*` headers
-    message: {
-        message: 'Too many requests. Please wait a minute before asking again.'
+    handler: (req, res, next, options) => {
+        const err = new Error('RATE_LIMIT_EXCEEDED');
+        err.statusCode = 429;
+        err.code = 'RATE_LIMIT_EXCEEDED';
+        next(err);
     }
 });
 
