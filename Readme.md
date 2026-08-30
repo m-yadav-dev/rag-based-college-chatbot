@@ -6,7 +6,8 @@
 
 A production-ready Retrieval-Augmented Generation (RAG) chatbot designed specifically for collegiate environments. It solves the problem of information fragmentation by delivering instant, context-aware answers to students and faculty by querying a vectorized knowledge base of college documents.
 
-![GIF: Hero UI Demonstration](placeholder_hero_ui.gif)
+<img width="985" height="822" alt="Animation" src="https://github.com/user-attachments/assets/9a4d308c-e9de-46ad-acdd-b5d54f24edf2" />
+
 
 ## ✨ Core Features
 
