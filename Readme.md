@@ -8,7 +8,7 @@ A production-ready Retrieval-Augmented Generation (RAG) chatbot designed specifi
 
 
 <h1>⚡ Instant Answers from Campus Data</h1>
-<img width="1000" height="600" alt="Instant Answers from Campus Data" src="https://github.com/user-attachments/assets/9a4d308c-e9de-46ad-acdd-b5d54f24edf2" />
+<img width="1200" height="600" alt="Instant Answers from Campus Data" src="https://github.com/user-attachments/assets/9a4d308c-e9de-46ad-acdd-b5d54f24edf2" />
 
 ## ✨ Core Features
 
@@ -17,7 +17,7 @@ Frictionless onboarding with ephemeral guest sessions.
 - **Mechanism:** MongoDB 24-hour TTL (Time-To-Live) indexes automatically purge guest data, ensuring a zero-maintenance, privacy-first experience.
 
 <h1>🔒 Privacy-First Ephemeral Authentication</h1>
-<img width="1000" height="600" alt=" Guest Auth Flow" src="https://github.com/user-attachments/assets/64be3bc7-1e47-4263-b4d2-4558574e3a91" />
+<img width="1200" height="600" alt=" Guest Auth Flow" src="https://github.com/user-attachments/assets/64be3bc7-1e47-4263-b4d2-4558574e3a91" />
 
 
 ### 🧠 Full-Sync Document Management (RAG Pipeline)
@@ -25,14 +25,14 @@ A resilient, synchronised approach to vector knowledge management.
 - **Mechanism:** Uploaded documents are simultaneously stored in Cloudinary, while their vectorised representations are cached in Upstash Redis and indexed in MongoDB. Deletions trigger a synchronised wipe across all three services to prevent orphan data and vector drift.
 
 <h1>⚙️ Admin Dashboard: Centralized Knowledge Management</h1>
-<img width="1000" height="600" alt="Admin Dashboard Centralized Knowledge Management" src="https://github.com/user-attachments/assets/b9f96454-a73c-49a6-852b-48d1a76ee73b" />
+<img width="1200" height="600" alt="Admin Dashboard Centralized Knowledge Management" src="https://github.com/user-attachments/assets/b9f96454-a73c-49a6-852b-48d1a76ee73b" />
 
 ### 🛡️ Robust API Rate Limiting & Error Handling
 Enterprise-grade reliability out of the box.
 - **Mechanism:** Centralized error handling combined with strict API rate limiting prevents abuse and ensures high availability, even during peak campus usage times (e.g., enrollment periods).
 
 <h1>🚦 Request Quota Enforcement</h1>
-<img width="1000" height="600" alt="Rate limiter" src="https://github.com/user-attachments/assets/5668338c-a096-4aff-a8e8-8bc09acd34cd" />
+<img width="1200" height="600" alt="Rate limiter" src="https://github.com/user-attachments/assets/5668338c-a096-4aff-a8e8-8bc09acd34cd" />
 
 
 ## 🏗️ High-Level Architecture
