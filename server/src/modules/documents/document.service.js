@@ -33,7 +33,6 @@ const deleteDocumentService = async (docId) => {
     
     // 2. Delete VectorChunks (Full Sync)
     await VectorChunk.deleteMany({ documentId: docId });
-    console.log(`✅ Deleted VectorChunks for document: ${docId}`);
     
     // 3. Delete Document record
     await Document.findByIdAndDelete(docId);
@@ -45,7 +44,6 @@ const deleteDocumentService = async (docId) => {
 };
 
 const renameDocumentService = async (docId, newTitle) => {
-    console.log(`New Title for ${docId} is: ${newTitle}`)
     const updatedDoc = await Document.findByIdAndUpdate(
         docId,
         { title: newTitle },

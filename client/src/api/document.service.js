@@ -25,10 +25,8 @@ export const deleteDocumentService = async (id, token) => {
 };
 
 export const renameDocumentService = async (id, newTitle, token) => {
-    console.log(`New Title for ${id} is: ${newTitle}`)
     const { data } = await api.patch(`/documents/${id}/rename`, { title: newTitle }, {
         headers: { Authorization: `Bearer ${token}` }
     });
-    console.log(`The data is: ${data}`)
     return data;
 };

@@ -48,12 +48,9 @@ const uploadDocument = async (req, res, next) => {
         }
 
         // 1. PDF Parsing
-        console.log('[1/6] Starting PDF parsing...');
         const parser = new PDFParse({ data: req.file.buffer });
         const pdfData = await parser.getText();
-        console.log("PDF Text Extracted Successfully:", pdfData.text.substring(0, 50));
         const rawText = pdfData.text;
-        console.log(`[1/6] PDF parsed successfully. Extracted ${rawText.length} characters.`);
 
         if (!rawText || rawText.trim() === '') {
             console.warn('PDF extracted text is empty!');
@@ -61,22 +58,15 @@ const uploadDocument = async (req, res, next) => {
         }
 
         // 2. Text Splitting
-        console.log('[2/6] Starting text chunking...');
         const chunks = splitText(rawText);
-        console.log(`[2/6] Text split successfully. Generated ${chunks.length} chunks.`);
 
         // 3. Generate Embeddings
-        console.log('[3/6] Sending chunks to Google GenAI for embeddings...');
         const embeddedChunks = await generateEmbeddings(chunks);
-        console.log(`[3/6] Embeddings generated successfully for ${embeddedChunks.length} chunks.`);
 
         // 4. Upload to Cloudinary using stream
-        console.log('[4/6] Uploading original PDF to Cloudinary...');
         const result = await streamUpload(req.file.buffer);
-        console.log(`[4/6] Cloudinary upload successful. Public ID: ${result.public_id}`);
 
         // 5. Save Document to MongoDB
-        console.log('[5/6] Creating parent Document in MongoDB...');
         // Note: Hardcoding uploadedBy for scaffolding. Will be replaced by req.user._id in future auth phase.
         const newDocument = await Document.create({
             title,
@@ -84,10 +74,8 @@ const uploadDocument = async (req, res, next) => {
             cloudinaryId: result.public_id,
             uploadedBy: new mongoose.Types.ObjectId()
         });
-        console.log(`[5/6] Document created with ID: ${newDocument._id}`);
 
         // 6. Save Vector Chunks to MongoDB
-        console.log('[6/6] Attempting bulk DB insert for VectorChunks...');
         try {
             const vectorsToInsert = embeddedChunks.map(chunk => ({
                 documentId: newDocument._id,
@@ -95,7 +83,6 @@ const uploadDocument = async (req, res, next) => {
                 embedding: chunk.embedding
             }));
             await VectorChunk.insertMany(vectorsToInsert);
-            console.log(`[6/6] SUCCESS: ${vectorsToInsert.length} VectorChunks inserted into MongoDB.`);
         } catch (dbError) {
             // Rollback Document creation if chunk insertion fails to prevent orphaned records
             console.error('❌ Vector bulk insertion failed! Rolling back Document creation...');
@@ -141,7 +128,6 @@ const renameDocument = async (req, res, next) => {
             return res.status(400).json({ message: 'New title is required' });
         }
         const updatedDoc = await renameDocumentService(req.params.id, newTitle.trim());
-        // Return exactly the updated document for the store sync
         res.status(200).json(updatedDoc);
     } catch (error) {
         if (error.message === 'Document not found') error.statusCode = 404;
