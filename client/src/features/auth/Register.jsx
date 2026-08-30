@@ -47,11 +47,11 @@ const Register = () => {
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gray-50">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/auth-bg.jpg')" }}>
+            <div className="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 p-6 sm:p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-                    <p className="text-gray-500 mt-2">Join the college chatbot platform.</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Create Account</h1>
+                    <p className="text-gray-500 mt-2 text-sm sm:text-base">Join the college chatbot platform.</p>
                 </div>
 
                 <form onSubmit={handleRegister} className="space-y-5">
@@ -77,17 +77,14 @@ const Register = () => {
                         disabled={isLoading}
                     />
                     
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            disabled={isLoading}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                        />
-                    </div>
+                    <TextInput
+                        label="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        disabled={isLoading}
+                        type="password"
+                    />
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Account Role</label>
@@ -95,7 +92,7 @@ const Register = () => {
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                             disabled={isLoading}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white/70"
                         >
                             <option value="Student">Student (Access Chat)</option>
                             <option value="Admin">Admin (Access Document Manager)</option>
@@ -106,7 +103,7 @@ const Register = () => {
                         type="submit" 
                         isLoading={isLoading} 
                         loadingText="Creating account..."
-                        className="w-full mt-2"
+                        className="w-full mt-2 cursor-pointer"
                     >
                         Sign Up
                     </Button>
@@ -124,4 +121,3 @@ const Register = () => {
 };
 
 export default Register;
-

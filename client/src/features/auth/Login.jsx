@@ -8,7 +8,7 @@ const Login = () => {
     // Local form state only
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+
     // Global state subscriptions
     const login = useAuthStore((state) => state.login);
     const guestLogin = useAuthStore((state) => state.guestLogin);
@@ -48,11 +48,11 @@ const Login = () => {
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gray-50">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/auth-bg.jpg')" }}>
+            <div className="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 p-6 sm:p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-                    <p className="text-gray-500 mt-2">Log in to access your dashboard.</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome Back</h1>
+                    <p className="text-gray-500 mt-2 text-sm sm:text-base">Log in to access your dashboard.</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-5">
@@ -91,10 +91,10 @@ const Login = () => {
 
                 <div className="relative mt-6">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200"></div>
+                        <div className="w-full border-t border-gray-300/50"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-gray-500">Or</span>
+                        <span className="px-2 bg-white/80 text-gray-500 rounded">Or</span>
                     </div>
                 </div>
                 
@@ -102,7 +102,7 @@ const Login = () => {
                     type="button"
                     onClick={handleGuestLogin}
                     disabled={isGuestLoggedIn}
-                    className="w-full mt-6 cursor-pointer flex justify-center py-2.5 px-4 border-2 border-indigo-600 rounded-xl shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full mt-6 cursor-pointer flex justify-center py-2.5 px-4 border-2 border-indigo-600 rounded-xl shadow-sm text-sm font-medium text-indigo-600 bg-white/70 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     {isGuestLoggedIn ? 'Setting up Guest...' : 'Continue as Guest (24h Access)'}
                 </button>
@@ -119,3 +119,4 @@ const Login = () => {
 };
 
 export default Login;
+
