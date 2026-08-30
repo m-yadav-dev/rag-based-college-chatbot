@@ -10,7 +10,6 @@ A production-ready Retrieval-Augmented Generation (RAG) chatbot designed specifi
 <h1>⚡ Instant Answers from Campus Data</h1>
 <img width="1000" height="600" alt="Instant Answers from Campus Data" src="https://github.com/user-attachments/assets/9a4d308c-e9de-46ad-acdd-b5d54f24edf2" />
 
-
 ## ✨ Core Features
 
 ### 🚀 Seamless Guest Login

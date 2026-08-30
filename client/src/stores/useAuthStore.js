@@ -22,6 +22,7 @@ export const useAuthStore = create((set) => ({
     role: initialUser?.role || null,
     isAuthChecked: false,
     isLoading: false,
+    isGuestLoggedIn: false,
     error: null,
 
     rehydrate: () => {
@@ -73,7 +74,7 @@ export const useAuthStore = create((set) => ({
     },
 
     guestLogin: async () => {
-        set({ isLoading: true, error: null });
+        set({ isGuestLoggedIn: true, error: null });
         try {
             const data = await guestLoginRequest();
             if (data && data.user && data.token) {
@@ -82,7 +83,7 @@ export const useAuthStore = create((set) => ({
                 set({
                     user: data.user, token: data.token,
                     isAuthenticated: true, role: data.user.role,
-                    isLoading: false, isAuthChecked: true
+                    isGuestLoggedIn: false, isAuthChecked: true
                 });
             }
             return true;
@@ -91,7 +92,7 @@ export const useAuthStore = create((set) => ({
             if (err.response?.data?.message) {
                 errorMessage = err.response.data.message;
             }
-            set({ error: errorMessage, isLoading: false });
+            set({ error: errorMessage, isGuestLoggedIn: false });
             throw new Error(errorMessage);
         }
     },

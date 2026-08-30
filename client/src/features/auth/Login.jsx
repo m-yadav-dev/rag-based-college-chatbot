@@ -15,7 +15,7 @@ const Login = () => {
     const isLoading = useAuthStore((state) => state.isLoading);
     const error = useAuthStore((state) => state.error);
     const clearError = useAuthStore((state) => state.clearError);
-    
+    const isGuestLoggedIn = useAuthStore((state) => state.isGuestLoggedIn);
     const navigate = useNavigate();
 
     // Clear any lingering errors on mount
@@ -83,7 +83,7 @@ const Login = () => {
                         type="submit" 
                         isLoading={isLoading} 
                         loadingText="Authenticating..."
-                        className="w-full mt-2"
+                        className="w-full mt-2 cursor-pointer"
                     >
                         Sign In
                     </Button>
@@ -101,10 +101,10 @@ const Login = () => {
                 <button
                     type="button"
                     onClick={handleGuestLogin}
-                    disabled={isLoading}
+                    disabled={isGuestLoggedIn}
                     className="w-full mt-6 cursor-pointer flex justify-center py-2.5 px-4 border-2 border-indigo-600 rounded-xl shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                    {isLoading ? 'Setting up Guest...' : 'Continue as Guest (24h Access)'}
+                    {isGuestLoggedIn ? 'Setting up Guest...' : 'Continue as Guest (24h Access)'}
                 </button>
 
                 <div className="mt-6 text-center text-sm text-gray-600">

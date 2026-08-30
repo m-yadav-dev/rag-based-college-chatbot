@@ -52,14 +52,14 @@ const DocumentManager = () => {
     };
 
     return (
-        <div className="w-full mx-auto p-6 space-y-8">
+        <div className="w-full mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8 overflow-y-auto">
             <header>
-                <h1 className="text-3xl font-bold text-gray-900">Knowledge Base Management</h1>
-                <p className="text-gray-600 mt-2">Upload and manage institutional documents for the AI chatbot.</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Knowledge Base Management</h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Upload and manage institutional documents for the AI chatbot.</p>
             </header>
 
-            <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+            <section className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
                     <UploadCloud className="w-5 h-5 text-indigo-600" />
                     Upload New Document
                 </h2>
@@ -99,37 +99,32 @@ const DocumentManager = () => {
             </section>
 
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <div className="px-4 sm:px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
                         <FileText className="w-5 h-5 text-indigo-600" />
-                        Indexed Documents
+                        Indexed Documents ({documents.length})
                     </h2>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
-                                <th className="px-6 py-4 font-medium border-b border-gray-100">Document Title</th>
-                                <th className="px-6 py-4 font-medium border-b border-gray-100">Upload Date</th>
-                                <th className="px-6 py-4 font-medium border-b border-gray-100">Status</th>
-                                <th className="px-6 py-4 font-medium border-b border-gray-100 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {documents.length === 0 ? (
-                                <tr>
-                                    <td colSpan="4" className="px-6 py-12 text-center text-gray-500">
-                                        No documents found. Upload a PDF to populate the knowledge base.
-                                    </td>
-                                </tr>
-                            ) : (
-                                documents.map((doc) => (
-                                    <DocumentItem key={doc._id} doc={doc} />
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                {/* Desktop Grid Header — hidden on mobile */}
+                <div className="hidden md:grid md:grid-cols-[1fr_140px_100px_120px] gap-4 px-6 py-3 bg-gray-50 text-gray-600 text-sm uppercase tracking-wider font-medium border-b border-gray-100">
+                    <span>Title</span>
+                    <span>Date</span>
+                    <span>Status</span>
+                    <span className="text-right">Actions</span>
+                </div>
+
+                {/* Document List */}
+                <div className="flex flex-col gap-3 p-3 sm:p-4 md:gap-0 md:p-0 md:divide-y md:divide-gray-100">
+                    {documents.length === 0 ? (
+                        <div className="px-6 py-12 text-center text-gray-500">
+                            No documents found. Upload a PDF to populate the knowledge base.
+                        </div>
+                    ) : (
+                        documents.map((doc) => (
+                            <DocumentItem key={doc._id} doc={doc} />
+                        ))
+                    )}
                 </div>
             </section>
         </div>
@@ -137,3 +132,4 @@ const DocumentManager = () => {
 };
 
 export default DocumentManager;
+

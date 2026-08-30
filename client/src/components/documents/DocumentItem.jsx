@@ -32,73 +32,86 @@ const DocumentItem = ({ doc }) => {
     };
 
     return (
-        <tr className="hover:bg-gray-50/50 transition-colors">
-            <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-                        <FileText className="w-4 h-4" />
-                    </div>
-                    {isEditing ? (
-                        <div className="flex items-center gap-2">
-                            <input 
-                                type="text"
-                                className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-indigo-500 w-full max-w-[200px]"
-                                value={editTitle}
-                                onChange={(e) => setEditTitle(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-                                autoFocus
-                            />
-                            <Check 
-                                className="w-4 h-4 text-green-600 cursor-pointer hover:text-green-800 transition-colors" 
-                                onClick={handleRename} 
-                            />
-                            <X 
-                                className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-700 transition-colors" 
-                                onClick={() => { setIsEditing(false); setEditTitle(title); }} 
-                            />
-                        </div>
-                    ) : (
-                        <>
-                            <span className="font-medium text-gray-900">{title}</span>
-                            <Pencil 
-                                className="w-4 h-4 cursor-pointer text-gray-400 hover:text-indigo-600 transition-colors" 
-                                title="Rename Document" 
-                                onClick={() => setIsEditing(true)}
-                            />
-                        </>
-                    )}
+        <div className="
+            bg-white border border-gray-200 rounded-lg p-4 shadow-sm
+            md:border-0 md:rounded-none md:shadow-none md:px-6 md:py-4
+            md:grid md:grid-cols-[1fr_140px_100px_120px] md:gap-4 md:items-center
+            hover:bg-gray-50/50 transition-colors
+        ">
+            {/* Title Cell */}
+            <div className="flex items-start sm:items-center gap-3 mb-3 md:mb-0">
+                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg flex-shrink-0">
+                    <FileText className="w-4 h-4" />
                 </div>
-            </td>
-            <td className="px-6 py-4 text-gray-600">
-                {new Date(createdAt).toLocaleDateString()}
-            </td>
-            <td className="px-6 py-4">
+                {isEditing ? (
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <input 
+                            type="text"
+                            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-indigo-500 w-full max-w-[200px]"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+                            autoFocus
+                        />
+                        <Check 
+                            className="w-4 h-4 text-green-600 cursor-pointer hover:text-green-800 transition-colors flex-shrink-0" 
+                            onClick={handleRename} 
+                        />
+                        <X 
+                            className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-700 transition-colors flex-shrink-0" 
+                            onClick={() => { setIsEditing(false); setEditTitle(title); }} 
+                        />
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-medium text-gray-900 text-sm sm:text-base truncate">{title}</span>
+                        <Pencil 
+                            className="w-4 h-4 cursor-pointer text-gray-400 hover:text-indigo-600 transition-colors flex-shrink-0" 
+                            title="Rename Document" 
+                            onClick={() => setIsEditing(true)}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Date Cell */}
+            <div className="flex items-center gap-2 mb-2 md:mb-0">
+                <span className="text-xs text-gray-400 uppercase md:hidden">Date:</span>
+                <span className="text-sm text-gray-600">
+                    {new Date(createdAt).toLocaleDateString()}
+                </span>
+            </div>
+
+            {/* Status Cell */}
+            <div className="flex items-center gap-2 mb-3 md:mb-0">
+                <span className="text-xs text-gray-400 uppercase md:hidden">Status:</span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Indexed
                 </span>
-            </td>
-            <td className="px-6 py-4 text-right">
-                <div className="flex items-center justify-end gap-3">
-                    <a
-                        href={cloudinaryUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-gray-400 hover:text-indigo-600 transition-colors"
-                        title="View Original PDF"
-                    >
-                        <ExternalLink className="w-5 h-5" />
-                    </a>
-                    <button
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Delete Document & Vectors"
-                        onClick={handleDelete}
-                    >
-                        <Trash2 className="w-5 h-5" />
-                    </button>
-                </div>
-            </td>
-        </tr>
+            </div>
+
+            {/* Actions Cell */}
+            <div className="flex items-center gap-3 pt-3 border-t border-gray-100 md:pt-0 md:border-t-0 md:justify-end">
+                <a
+                    href={cloudinaryUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-gray-400 hover:text-indigo-600 transition-colors"
+                    title="View Original PDF"
+                >
+                    <ExternalLink className="w-5 h-5" />
+                </a>
+                <button
+                    className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                    title="Delete Document & Vectors"
+                    onClick={handleDelete}
+                >
+                    <Trash2 className="w-5 h-5" />
+                </button>
+            </div>
+        </div>
     );
 };
 
 export default DocumentItem;
+
