@@ -59,17 +59,15 @@ Following the 80/20 rule, we highlight only the three architectural pillars of t
 |----------|--------|-------------|---------------|
 | `/api/auth/guest-login` | `POST` | Initiates frictionless guest session (24h TTL index). | `{}` |
 | `/api/chat` | `POST` | Executes the core RAG pipeline with strict rate-limiting. | `{ "message": "string" }` |
-| `/api/documents/:id` | `DELETE` | Triggers a synchronized wipe across MongoDB, Redis, and Cloudinary. | `Params: { id: "string" }` |
+| `/api/documents/:id` | `DELETE` | Triggers a synchronised wipe across MongoDB, Redis, and Cloudinary. | `Params: { id: "string" }` |
 
 ## 🚀 Quick Start Guide
 
 Spin up the entire development environment in seconds.
 
-![GIF: Terminal Startup](placeholder_terminal_startup.gif)
-
 ### 1. Clone & Setup
 ```bash
-git clone https://github.com/your-username/rag-based-college-chatbot.git
+git clone https://github.com/m-yadav-dev/rag-based-college-chatbot.git
 cd rag-based-college-chatbot
 npm install # Root dependencies (if configured using workspaces/scripts)
 ```
@@ -104,7 +102,7 @@ The project requires several secure keys to orchestrate the backend services and
 
 | Scope | Variable | Purpose |
 |-------|----------|---------|
-| **Client** | `VITE_API_URL` | Connects the Vite frontend to the Express backend backend. |
+| **Client** | `VITE_API_URL` | Connects the Vite frontend to the Express backend. |
 | **Server** | `MONGODB_URI` | Connection string for MongoDB (Core Database). |
 | **Server** | `CLOUDINARY_API_KEY` | Grants access to Cloudinary for raw document blob storage. |
 | **Server** | `UPSTASH_REDIS_REST_URL` | Connects to Upstash Redis for high-speed vector caching. |
@@ -115,9 +113,9 @@ The project requires several secure keys to orchestrate the backend services and
 
 Building a resilient, production-ready RAG application brought several critical engineering challenges. Here is how we solved them:
 
-- **The 180-Line Rule & Service-Controller-Store Pattern:** Enforcing strict line limits led to a highly resilient Service-Controller-Route (Backend) and API-Store-Component (Frontend) architecture. By aggressively decoupling logic, we drastically improved testability, isolated failure domains, and minimized cognitive load.
-- **Handling Silent State Failures:** Debugging complex CORS constraints and state hydration issues during Vercel/Render deployments highlighted the dangers of silent UI failures. We solved this by implementing centralized error handling and robust programmatic navigation, ensuring that Zustand stores initialize and sync perfectly with React Router during Guest Auth redirection.
-- **Full-Sync Document Deletion:** A naive deletion approach leaves orphan vectors in Redis or zombie blobs in Cloudinary. We engineered a unified, transactional-style deletion flow (MongoDB + Cloudinary + Redis) to completely eliminate memory leaks, prevent vector drift, and maintain absolute data integrity across the ecosystem.
+- **The 180-Line Rule & Service-Controller-Store Pattern:** Enforcing strict line limits led to a highly resilient Service-Controller-Route (Backend) and API-Store-Component (Frontend) architecture. By aggressively decoupling logic, we drastically improved testability, isolated failure domains, and minimised cognitive load.
+- **Handling Silent State Failures:** Debugging complex CORS constraints and state hydration issues during Vercel/Render deployments highlighted the dangers of silent UI failures. We solved this by implementing centralised error handling and robust programmatic navigation, ensuring that Zustand stores initialise and sync perfectly with React Router during Guest Auth redirection.
+- **Full-Sync Document Deletion:** A naive deletion approach leaves orphan vectors in Redis or zombie blobs in Cloudinary. We engineered a unified, transactional-style deletion flow (MongoDB + Cloudinary + Redis) to eliminate memory leaks, prevent vector drift, and maintain absolute data integrity across the ecosystem.
 
 ## 🤝 Conclusion
 
