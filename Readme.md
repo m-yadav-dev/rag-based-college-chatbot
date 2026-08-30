@@ -19,7 +19,9 @@ A production-ready Retrieval-Augmented Generation (RAG) chatbot designed specifi
 Frictionless onboarding with ephemeral guest sessions.
 - **Mechanism:** MongoDB 24-hour TTL (Time-To-Live) indexes automatically purge guest data, ensuring a zero-maintenance, privacy-first experience.
 
-![GIF: Guest Auth Flow](placeholder_guest_auth.gif)
+<h1>🔒 Privacy-First Ephemeral Authentication</h1>
+<img width="1000" height="600" alt=" Guest Auth Flow" src="https://github.com/user-attachments/assets/64be3bc7-1e47-4263-b4d2-4558574e3a91" />
+
 
 ### 🧠 Full-Sync Document Management (RAG Pipeline)
 A resilient, synchronized approach to vector knowledge management.
