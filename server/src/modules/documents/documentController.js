@@ -9,10 +9,20 @@ const VectorChunk = require('../rag/VectorChunk');
 const { deleteDocumentService, renameDocumentService } = require('./document.service');
 
 // Helper to wrap cloudinary upload stream in a promise
-const streamUpload = (buffer) => {
+const streamUpload = (buffer, originalName) => {
     return new Promise((resolve, reject) => {
+        // Strip the .pdf extension if it exists to prevent .pdf.pdf double extensions
+        const cleanName = originalName ? originalName.replace(/\.pdf$/i, '') : "document";
+        
         const stream = cloudinary.uploader.upload_stream(
-            { resource_type: 'raw' }, // PDF is treated as raw or image depending on use case. 'raw' is safer for PDFs to retain format unless we want thumbnail generation. Let's use 'auto' or 'raw'. Wait, 'raw' means no PDF transformations. Let's use 'auto'.
+            { 
+                folder: 'RAG-Based College Chatbot/Documents',
+                resource_type: 'image',
+                format: 'pdf',
+                public_id: `${cleanName}_${Date.now()}`,
+                use_filename: true,
+                unique_filename: true
+            },
             (error, result) => {
                 if (result) {
                     resolve(result);
@@ -64,7 +74,7 @@ const uploadDocument = async (req, res, next) => {
         const embeddedChunks = await generateEmbeddings(chunks);
 
         // 4. Upload to Cloudinary using stream
-        const result = await streamUpload(req.file.buffer);
+        const result = await streamUpload(req.file.buffer, req.file.originalname);
 
         // 5. Save Document to MongoDB
         // Note: Hardcoding uploadedBy for scaffolding. Will be replaced by req.user._id in future auth phase.
