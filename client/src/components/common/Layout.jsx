@@ -62,7 +62,7 @@ const Layout = ({ children }) => {
             {/* Glass Header */}
             <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-md px-4 md:px-6 py-3 flex justify-between items-center border-b border-white/30 shadow-sm flex-shrink-0">
                 <div className="font-bold text-lg md:text-xl text-indigo-700 tracking-tight">
-                    EduRAG<span className="text-gray-400 font-normal">Bot</span>
+                    DocuTutor<span className="text-gray-400 font-normal">Chat</span>
                 </div>
 
                 {/* Desktop Nav */}

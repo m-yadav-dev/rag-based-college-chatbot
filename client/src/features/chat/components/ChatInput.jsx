@@ -26,8 +26,7 @@ const ChatInput = ({ onSend, isLoading }) => {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Ask about the college..."
-                        disabled={isLoading}
-                        className="flex-1 min-w-0 max-h-32 px-3 sm:px-4 py-2.5 sm:py-3 bg-transparent border-none outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base text-gray-700"
+                        className="flex-1 min-w-0 max-h-32 px-3 sm:px-4 py-2.5 sm:py-3 bg-transparent border-none outline-none resize-none text-sm sm:text-base text-gray-700"
                     />
                     <button
                         type="submit"
